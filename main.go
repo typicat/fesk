@@ -26,19 +26,19 @@ func scrape() []Rapport {
 		e.ForEach("td", func(_ int, el *colly.HTMLElement) {
 			switch el.Index {
 			case 0:
-				crap.Namn = el.Text + ","
+				crap.Namn = el.Text
 				strings.TrimSpace(crap.Namn)
 			case 1:
-				crap.Datum = el.Text + ","
+				crap.Datum = el.Text
 				strings.TrimSpace(crap.Datum)
 			case 2:
-				crap.Art = el.Text + ","
+				crap.Art = el.Text
 				strings.TrimSpace(crap.Art)
 			case 7:
-				crap.Metod = el.Text + ","
+				crap.Metod = el.Text
 				strings.TrimSpace(crap.Metod)
 			case 8:
-				crap.Langd = el.Text + "cm,"
+				crap.Langd = el.Text + "cm"
 				strings.TrimSpace(crap.Langd)
 			case 10:
 				crap.Plats = el.Text
