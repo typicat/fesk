@@ -34,13 +34,13 @@ func scrape() []Rapport {
 				crap.Art = el.Text + ","
 				strings.TrimSpace(crap.Art)
 			case 7:
-				crap.Metod = el.Text
+				crap.Metod = el.Text + ","
 				strings.TrimSpace(crap.Metod)
 			case 8:
 				crap.Langd = el.Text + "cm,"
 				strings.TrimSpace(crap.Langd)
 			case 10:
-				crap.Plats = el.Text + ","
+				crap.Plats = el.Text
 				strings.TrimSpace(crap.Plats)
 			}
 		})
