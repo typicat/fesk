@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"os"
 	"strings"
@@ -63,9 +64,29 @@ func main() {
 		return
 	}
 	defer f.Close()
-	for _, v := range rap {
-		fmt.Fprintln(f, v.Datum, v.Namn, v.Art, v.Langd, v.Metod, v.Plats)
+
+	writer := csv.NewWriter(f)
+	defer writer.Flush()
+
+	headers := []string{"Datum", "Namn", "Art", "Längd", "Metod", "Plats"}
+	err = writer.Write(headers)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+	data := [][]string{}
+	for _, v := range rap {
+		data = append(data, []string{v.Datum, v.Namn, v.Art, v.Langd, v.Metod, v.Plats})
+	}
+	err = writer.WriteAll(data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	/*for _, v := range data {
+		fmt.Fprintln(f, v.Datum, v.Namn, v.Art, v.Langd, v.Metod, v.Plats)
+	}*/
 	fmt.Println("\033[32mDone!\033[0m")
 
 }
