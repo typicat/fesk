@@ -47,16 +47,16 @@ func scrape() []Rapport {
 		rap = append(rap, crap)
 	})
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println(":: ", r.URL)
+		fmt.Println("Fetching data...", r.URL)
 	})
 	c.Visit("https://kagealven.com/fangstrapporter-aktuella/")
 	return rap
 }
 
 func main() {
-	fmt.Printf("::: \033[32mfesk 0.1\033[0m - csv catch report from Kågeälven\n")
+	fmt.Printf("::: \033[34mfesk 0.1\033[0m - csv catch report from Kågeälven\n")
 	rap := scrape()
-	fmt.Println(": Writing to file")
+	fmt.Println("Writing to file")
 	f, err := os.Create("rapport.csv")
 	if err != nil {
 		fmt.Println(err)
@@ -66,6 +66,6 @@ func main() {
 	for _, v := range rap {
 		fmt.Fprintln(f, v.Datum, v.Namn, v.Art, v.Langd, v.Metod, v.Plats)
 	}
-	fmt.Println(": Done!")
+	fmt.Println("\033[32mDone!\033[0m")
 
 }
