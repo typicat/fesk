@@ -58,6 +58,7 @@ func main() {
 	fmt.Printf("::: \033[34mfesk 0.1\033[0m - csv catch report from Kågeälven\n")
 	rap := scrape()
 	fmt.Println("writing to file")
+
 	f, err := os.Create("rapport.csv")
 	if err != nil {
 		fmt.Println(err)
@@ -83,10 +84,5 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
-	/*for _, v := range data {
-		fmt.Fprintln(f, v.Datum, v.Namn, v.Art, v.Langd, v.Metod, v.Plats)
-	}*/
 	fmt.Println("\033[32mDone!\033[0m")
-
 }
