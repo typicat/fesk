@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	colly "github.com/gocolly/colly/v2"
 )
@@ -46,7 +47,6 @@ func scrape() []Rapport {
 				if crap.Art == "Harr" {
 					harr++
 				}
-
 			case 7:
 				crap.Metod = el.Text
 				strings.TrimSpace(crap.Metod)
@@ -81,10 +81,14 @@ func summarize() {
 
 func main() {
 	fmt.Printf("::: \033[34mfesk 0.1\033[0m - csv catch report from Kågeälven\n")
+	forYear := time.Now()
+	curYear := forYear.Year()
+	outputFile := "rapport-" + fmt.Sprintf("%d", curYear) + ".csv"
+
 	rap := scrape()
 	fmt.Println("writing to file")
 
-	f, err := os.Create("rapport.csv")
+	f, err := os.Create(outputFile)
 	if err != nil {
 		fmt.Println(err)
 		return
