@@ -19,11 +19,11 @@ type Rapport struct {
 	Metod string
 }
 
-var oring, lax, harr int32
-var fluga, spinn int32
+var oring, lax, harr int
+var fluga, spinn int
 
 func scrape() []Rapport {
-	rap := make([]Rapport, 0)
+	rapportData := make([]Rapport, 0)
 	c := colly.NewCollector()
 	c.OnHTML("tr", func(e *colly.HTMLElement) {
 		crap := Rapport{}
@@ -64,19 +64,19 @@ func scrape() []Rapport {
 				strings.TrimSpace(crap.Plats)
 			}
 		})
-		rap = append(rap, crap)
+		rapportData = append(rapportData, crap)
 	})
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Printf("Fetching data... ")
 	})
 	c.Visit("https://kagealven.com/fangstrapporter-aktuella/")
-	return rap
+	return rapportData
 }
 
-func summarize() {
-	fmt.Println("Summarizing data...")
-	fmt.Printf("Fluga %d - Spinn %d\n", fluga, spinn)
-	fmt.Printf("Öringar %d - Laxar %d - Harrar %d\n", oring, lax, harr)
+func summarize(year int) {
+	fmt.Println("::: Summary", year)
+	fmt.Printf("Öringar %d | Laxar %d | Harrar %d\n", oring, lax, harr)
+	fmt.Printf("Fluga %d | Spinn %d\n", fluga, spinn)
 }
 
 func main() {
@@ -86,8 +86,7 @@ func main() {
 	outputFile := "rapport-" + fmt.Sprintf("%d", curYear) + ".csv"
 
 	rap := scrape()
-	fmt.Println("writing to file")
-
+	fmt.Printf("writing to file... ")
 	f, err := os.Create(outputFile)
 	if err != nil {
 		fmt.Println(err)
@@ -97,7 +96,6 @@ func main() {
 
 	writer := csv.NewWriter(f)
 	defer writer.Flush()
-
 	headers := []string{"Datum", "Namn", "Art", "Längd", "Metod", "Plats"}
 	err = writer.Write(headers)
 	if err != nil {
@@ -113,6 +111,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("\033[32mDone!\033[0m")
-	summarize()
+
+	fmt.Printf("\033[32mDone!\033[0m\n\n")
+	summarize(curYear)
 }
