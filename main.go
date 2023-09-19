@@ -20,7 +20,7 @@ type Rapport struct {
 }
 
 var oring, lax, harr int
-var fluga, spinn int
+var fluga, spinn, totalOringFluga, totalOringSpinn, totalLaxFluga, totalLaxSpinn int
 
 func scrape() []Rapport {
 	rapportData := make([]Rapport, 0)
@@ -52,9 +52,21 @@ func scrape() []Rapport {
 				strings.TrimSpace(crap.Metod)
 				if crap.Metod == "Fluga" {
 					fluga++
+					if crap.Art == "Öring" {
+						totalOringFluga++
+					}
+					if crap.Art == "Lax" {
+						totalLaxFluga++
+					}
 				}
 				if crap.Metod == "Spinn" {
 					spinn++
+					if crap.Art == "Öring" {
+						totalOringSpinn++
+					}
+					if crap.Art == "Lax" {
+						totalLaxSpinn++
+					}
 				}
 			case 8:
 				crap.Langd = el.Text + "cm"
@@ -75,8 +87,11 @@ func scrape() []Rapport {
 
 func summarize(year int) {
 	fmt.Println("::: Summary", year)
-	fmt.Printf("Öringar %d | Laxar %d | Harrar %d\n", oring, lax, harr)
-	fmt.Printf("Fluga %d | Spinn %d\n", fluga, spinn)
+	fmt.Printf("- Öring\tFluga %d | Spinn %d\n", totalOringFluga, totalOringSpinn)
+	fmt.Printf("- Lax\tFluga %d | Spinn %d\n\n", totalLaxFluga, totalLaxSpinn)
+	fmt.Println("::: Total")
+	fmt.Printf("Öringar %d \t Laxar %d \t Harrar %d\n", oring, lax, harr)
+	fmt.Printf("Fluga %d \t Spinn %d\n", fluga, spinn)
 }
 
 func main() {
