@@ -26,7 +26,7 @@ type Rapport struct {
 }
 
 var (
-	oring, lax, harr, fluga, spinn, aterutsatt                      int
+	oring, lax, harr, fluga, spinn, aterutsatt                     int
 	totalOringFluga, totalOringSpinn, totalLaxFluga, totalLaxSpinn int
 )
 
@@ -103,7 +103,7 @@ func scrape() []Rapport {
 func summarize(year int) {
 	totalRapporterade := oring + lax + harr
 	fmt.Println("Summering ", year, " - ", totalRapporterade, "st")
-  fmt.Printf(" + Öring %d - Lax %d - Harr %d\n", oring, lax, harr)
+	fmt.Printf(" + Öring %d - Lax %d - Harr %d\n", oring, lax, harr)
 	fmt.Println(" - Fluga ", fluga, "(Öring ", totalOringFluga, "Lax ", totalLaxFluga, ")")
 	fmt.Println(" - Spinn ", spinn, "(Öring ", totalOringSpinn, "Lax ", totalLaxSpinn, ")")
 	fmt.Println("Återutsatta: ", aterutsatt)
