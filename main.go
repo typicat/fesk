@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -26,9 +25,10 @@ type Rapport struct {
 	Kommentar  string
 }
 
-var oring, lax, harr int
-var fluga, spinn, totalOringFluga, totalOringSpinn, totalLaxFluga, totalLaxSpinn int
-var underRequirement int
+var (
+	oring, lax, harr, fluga, spinn                                 int
+	totalOringFluga, totalOringSpinn, totalLaxFluga, totalLaxSpinn int
+)
 
 func scrape() []Rapport {
 	rapportData := make([]Rapport, 0)
@@ -38,14 +38,11 @@ func scrape() []Rapport {
 		e.ForEach("td", func(_ int, el *colly.HTMLElement) {
 			switch el.Index {
 			case 0:
-				crap.Namn = el.Text
-				strings.TrimSpace(crap.Namn)
+				crap.Namn = strings.TrimSpace(el.Text)
 			case 1:
-				crap.Datum = el.Text
-				strings.TrimSpace(crap.Datum)
+				crap.Datum = strings.TrimSpace(el.Text)
 			case 2:
-				crap.Art = el.Text
-				strings.TrimSpace(crap.Art)
+				crap.Art = strings.TrimSpace(el.Text)
 				if crap.Art == "Öring" {
 					oring++
 				}
@@ -56,20 +53,15 @@ func scrape() []Rapport {
 					harr++
 				}
 			case 3:
-				crap.Kon = el.Text
-				strings.TrimSpace(crap.Kon)
+				crap.Kon = strings.TrimSpace(el.Text)
 			case 4:
-				crap.Fettfena = el.Text
-				strings.TrimSpace(crap.Fettfena)
+				crap.Fettfena = strings.TrimSpace(el.Text)
 			case 5:
-				crap.Aterutsatt = el.Text
-				strings.TrimSpace(crap.Aterutsatt)
+				crap.Aterutsatt = strings.TrimSpace(el.Text)
 			case 6:
-				crap.Utlekt = el.Text
-				strings.TrimSpace(crap.Utlekt)
+				crap.Utlekt = strings.TrimSpace(el.Text)
 			case 7:
-				crap.Metod = el.Text
-				strings.TrimSpace(crap.Metod)
+				crap.Metod = strings.TrimSpace(el.Text)
 				if crap.Metod == "Fluga" {
 					fluga++
 					if crap.Art == "Öring" {
@@ -89,21 +81,13 @@ func scrape() []Rapport {
 					}
 				}
 			case 8:
-				crap.Langd = el.Text + "cm"
-				strings.TrimSpace(crap.Langd)
-				checkLength, _ := strconv.Atoi(crap.Langd)
-				if checkLength < 50 {
-					underRequirement++
-				}
+				crap.Langd = strings.TrimSpace(el.Text) + "cm"
 			case 9:
-				crap.Vikt = el.Text
-				strings.TrimSpace(crap.Vikt)
+				crap.Vikt = strings.TrimSpace(el.Text)
 			case 10:
-				crap.Plats = el.Text
-				strings.TrimSpace(crap.Plats)
+				crap.Plats = strings.TrimSpace(el.Text)
 			case 11:
-				crap.Kommentar = el.Text
-				strings.TrimSpace(crap.Kommentar)
+				crap.Kommentar = strings.TrimSpace(el.Text)
 			}
 		})
 		rapportData = append(rapportData, crap)
@@ -122,16 +106,14 @@ func summarize(year int) {
 	fmt.Println("::: Total")
 	fmt.Printf("Öringar %d \t Laxar %d \t Harrar %d\n", oring, lax, harr)
 	fmt.Printf("Fluga %d \t Spinn %d\n", fluga, spinn)
-	fmt.Printf("Under längdkrav: %d\n", underRequirement)
 }
 
 func main() {
 	fmt.Printf("::: \033[34mfesk 0.1\033[0m - csv catch report from Kågeälven\n")
-	forYear := time.Now()
-	curYear := forYear.Year()
+	yearToday := time.Now()
+	curYear := yearToday.Year()
 	outputFile := "rapport-" + fmt.Sprintf("%d", curYear) + ".csv"
 
-	rap := scrape()
 	fmt.Printf("writing to file... ")
 	f, err := os.Create(outputFile)
 	if err != nil {
@@ -139,19 +121,50 @@ func main() {
 		return
 	}
 	defer f.Close()
-
 	writer := csv.NewWriter(f)
 	defer writer.Flush()
-	headers := []string{"Datum", "Namn", "Art", "Kön", "Fettfena", "Återutsatt", "Utlekt", "Längd", "Metod", "Vikt", "Plats", "Kommentar"}
+	headers := []string{
+		"Datum",
+		"Namn",
+		"Art",
+		"Kön",
+		"Fettfena",
+		"Återutsatt",
+		"Utlekt",
+		"Längd",
+		"Metod",
+		"Vikt",
+		"Plats",
+		"Kommentar",
+	}
 	err = writer.Write(headers)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	rap := scrape()
 	data := [][]string{}
 	for _, v := range rap {
-		data = append(data, []string{v.Datum, v.Namn, v.Art, v.Kon, v.Fettfena, v.Aterutsatt, v.Utlekt, v.Langd, v.Metod, v.Vikt, v.Plats, v.Kommentar})
+		data = append(
+			data,
+			[]string{
+				v.Datum,
+				v.Namn,
+				v.Art,
+				v.Kon,
+				v.Fettfena,
+				v.Aterutsatt,
+				v.Utlekt,
+				v.Langd,
+				v.Metod,
+				v.Vikt,
+				v.Plats,
+				v.Kommentar,
+			},
+		)
 	}
+
 	err = writer.WriteAll(data)
 	if err != nil {
 		fmt.Println(err)
