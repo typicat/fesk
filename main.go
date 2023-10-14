@@ -26,7 +26,7 @@ type Rapport struct {
 }
 
 var (
-	oring, lax, harr, fluga, spinn                                 int
+	oring, lax, harr, fluga, spinn, aterutsatt                      int
 	totalOringFluga, totalOringSpinn, totalLaxFluga, totalLaxSpinn int
 )
 
@@ -40,9 +40,9 @@ func scrape() []Rapport {
 			case 0:
 				crap.Namn = strings.TrimSpace(el.Text)
 			case 1:
-				crap.Datum = strings.TrimSpace(el.Text)
+				crap.Datum = el.Text
 			case 2:
-				crap.Art = strings.TrimSpace(el.Text)
+				crap.Art = el.Text
 				if crap.Art == "Öring" {
 					oring++
 				}
@@ -53,15 +53,16 @@ func scrape() []Rapport {
 					harr++
 				}
 			case 3:
-				crap.Kon = strings.TrimSpace(el.Text)
+				crap.Kon = el.Text
 			case 4:
-				crap.Fettfena = strings.TrimSpace(el.Text)
+				crap.Fettfena = el.Text
 			case 5:
-				crap.Aterutsatt = strings.TrimSpace(el.Text)
+				crap.Aterutsatt = el.Text
+				aterutsatt++
 			case 6:
-				crap.Utlekt = strings.TrimSpace(el.Text)
+				crap.Utlekt = el.Text
 			case 7:
-				crap.Metod = strings.TrimSpace(el.Text)
+				crap.Metod = el.Text
 				if crap.Metod == "Fluga" {
 					fluga++
 					if crap.Art == "Öring" {
@@ -85,7 +86,7 @@ func scrape() []Rapport {
 			case 9:
 				crap.Vikt = strings.TrimSpace(el.Text)
 			case 10:
-				crap.Plats = strings.TrimSpace(el.Text)
+				crap.Plats = el.Text
 			case 11:
 				crap.Kommentar = strings.TrimSpace(el.Text)
 			}
@@ -93,19 +94,19 @@ func scrape() []Rapport {
 		rapportData = append(rapportData, crap)
 	})
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Printf("Fetching data... ")
+		fmt.Printf("* Hämtar rapporter... ")
 	})
 	c.Visit("https://kagealven.com/fangstrapporter-aktuella/")
 	return rapportData
 }
 
 func summarize(year int) {
-	fmt.Println("::: Summary", year)
-	fmt.Printf("- Öring\tFluga %d | Spinn %d\n", totalOringFluga, totalOringSpinn)
-	fmt.Printf("- Lax\tFluga %d | Spinn %d\n\n", totalLaxFluga, totalLaxSpinn)
-	fmt.Println("::: Total")
-	fmt.Printf("Öringar %d \t Laxar %d \t Harrar %d\n", oring, lax, harr)
-	fmt.Printf("Fluga %d \t Spinn %d\n", fluga, spinn)
+	totalRapporterade := oring + lax + harr
+	fmt.Println("Summering ", year, " - ", totalRapporterade, "st")
+  fmt.Printf(" + Öring %d - Lax %d - Harr %d\n", oring, lax, harr)
+	fmt.Println(" - Fluga ", fluga, "(Öring ", totalOringFluga, "Lax ", totalLaxFluga, ")")
+	fmt.Println(" - Spinn ", spinn, "(Öring ", totalOringSpinn, "Lax ", totalLaxSpinn, ")")
+	fmt.Println("Återutsatta: ", aterutsatt)
 }
 
 func main() {
@@ -114,7 +115,6 @@ func main() {
 	curYear := yearToday.Year()
 	outputFile := "rapport-" + fmt.Sprintf("%d", curYear) + ".csv"
 
-	fmt.Printf("writing to file... ")
 	f, err := os.Create(outputFile)
 	if err != nil {
 		fmt.Println(err)
@@ -171,6 +171,6 @@ func main() {
 		return
 	}
 
-	fmt.Printf("\033[32mDone!\033[0m\n\n")
+	fmt.Printf("\033[32m* Done!\033[0m\n\n")
 	summarize(curYear)
 }
